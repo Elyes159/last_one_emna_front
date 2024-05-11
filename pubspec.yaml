@@ -1,0 +1,34 @@
+name: untitled2
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+    sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher: ^6.0.12
+  cupertino_icons: ^1.0.2
+  http: ^1.2.1
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
+  firebase_messaging: ^14.9.2
+  firebase_core: ^2.31.0
+  cloud_firestore: ^4.17.3
+  onesignal_flutter: ^5.1.6
+  flutter_local_notifications: ^17.1.2
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+  
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/

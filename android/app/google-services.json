@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1061432734772",
+    "project_id": "notif-5d27b",
+    "storage_bucket": "notif-5d27b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061432734772:android:b551eda9a674313c0cc661",
+        "android_client_info": {
+          "package_name": "com.example.untitled2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1sq2yX50_MOiplV8qKoDH53fKoo5p7Yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
