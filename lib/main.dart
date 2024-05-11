@@ -8,15 +8,17 @@ import 'package:untitled2/page/connecte.dart';
 import 'package:untitled2/page/home.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Assurez-vous que Flutter est initialisé
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Assurez-vous que Flutter est initialisé
   await Firebase.initializeApp();
-    FirebaseMessaging.instance.subscribeToTopic('nouveauProduit');
- // Initialisez Firebase
+  FirebaseMessaging.instance.subscribeToTopic('nouveauProduit');
+  // Initialisez Firebase
 
   // Initialisez SharedPreferences
   await SharedPreferences.getInstance();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
+  print(token);
 
   runApp(MyApp(isLoggedIn: token != null));
 }
@@ -41,4 +43,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
- 

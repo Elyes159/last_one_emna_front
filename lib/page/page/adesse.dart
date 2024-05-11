@@ -23,7 +23,7 @@ class _AdressePageState extends State<AdressePage> {
     };
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.1.18:3003/user/getuserbytoken/$token"),
+        Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
         headers: headers,
       );
       if (response.statusCode == 200) {
@@ -48,7 +48,7 @@ class _AdressePageState extends State<AdressePage> {
     print("houni : $userid");
     try {
       final resp = await http.put(
-        Uri.parse("http://192.168.1.18:3003/user/updateadresse/$userid"),
+        Uri.parse("http://192.168.1.17:3003/user/updateadresse/$userid"),
         headers: headers,
         body: jsonEncode({
           "adresse": _adresseController.text,
@@ -177,8 +177,8 @@ class _AdressePageState extends State<AdressePage> {
                       },
                       child: Container(
                         width: 90, // Extend the button to full width
-                        padding: EdgeInsets.symmetric(
-                            vertical: 8), // Adjust padding
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8), // Adjust padding
                         child: Text(
                           'Confirmer',
                           style: TextStyle(

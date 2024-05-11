@@ -16,27 +16,24 @@ class ProductPage extends StatefulWidget {
   final String id;
   final Null Montant_HT;
   final Null Montant_TTC;
-  final String  Image;
+  final String Image;
   final int quantite;
   final int Etat;
-  final String  type;
+  final String type;
   final List<dynamic> categorie;
   final String reference;
-  
 
-  ProductPage({
-    required this.Nom,
-    required this.id,
-    required this.Montant_HT,
-    required this.Montant_TTC,
-    required this.Image,
-    required this.quantite,
-    required this.Etat,
-    required this.type,
-    required this.categorie,
-    required this.reference
-   
-  });
+  ProductPage(
+      {required this.Nom,
+      required this.id,
+      required this.Montant_HT,
+      required this.Montant_TTC,
+      required this.Image,
+      required this.quantite,
+      required this.Etat,
+      required this.type,
+      required this.categorie,
+      required this.reference});
 
   @override
   _ProductPageState createState() => _ProductPageState();
@@ -73,7 +70,7 @@ class _ProductPageState extends State<ProductPage> {
     if (token != null) {
       String? userId = await getUserIdFromToken(token);
       if (userId != null) {
-        String apiUrl = "http:// 192.168.1.15:3003/user/favorites/$userId";
+        String apiUrl = "http://192.168.1.17:3003/user/favorites/$userId";
         try {
           final response = await http.get(Uri.parse(apiUrl));
           if (response.statusCode == 200) {
@@ -101,76 +98,76 @@ class _ProductPageState extends State<ProductPage> {
     return prefs.getString('token');
   }
 
- Future<String?> getUserIdFromToken(String token) async {
-  Map<String, String> headers = {
-    'Content-Type': 'application/json',
-  };
-
-  try {
-    final resp = await http.get(
-      Uri.parse("http://192.168.1.15:3003/user/getuserbytoken/$token"),
-      headers: headers,
-    );
-    print("tokennnnnn : $token");
-    if (resp.statusCode == 200) {
-      print("houni : 200");
-      print(token);
-      // Vérifier si le corps de la réponse n'est pas vide
-      if (resp.body.isNotEmpty) {
-        final userData = jsonDecode(resp.body);
-        final userId = userData['_id'] ;
-        print("useeeeeeeeeeeeeer   $userId");
-        return userId;
-      } else {
-        print('Le corps de la réponse est vide');
-        return null;
-      }
-    } else {
-      print(
-          'Erreur lors de la récupération de l\'ID de l\'utilisateur: ${resp.statusCode}');
-      return null;
-    }
-  } catch (e) {
-    print('Erreur lors de la récupération de l\'ID de l\'utilisateur: $e');
-    return null;
-  }
-}
-
- Future<void> addToCart(String userId, String productId, int quantite) async {
-  String? token = await getTokenFromSharedPreferences();
-  if (token != null) {
+  Future<String?> getUserIdFromToken(String token) async {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token', 
     };
 
     try {
-      final url = Uri.parse(
-        "http://192.168.1.15:3003/user/add-to-cart/$userId/$productId",
-      );
-      final resp = await http.put(
-        url,
+      final resp = await http.get(
+        Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
         headers: headers,
-        body: jsonEncode({
-          "quantite" : quantite
-        }), // Empty body since you're sending quantite as a query parameter
       );
+      print("tokennnnnn : $token");
       if (resp.statusCode == 200) {
-        print('Produit ajouté au panier avec succès');
+        print("houni : 200");
+        print(token);
+        // Vérifier si le corps de la réponse n'est pas vide
+        if (resp.body.isNotEmpty) {
+          final userData = jsonDecode(resp.body);
+          final userId = userData['_id'];
+          print("useeeeeeeeeeeeeer   $userId");
+          return userId;
+        } else {
+          print('Le corps de la réponse est vide');
+          return null;
+        }
       } else {
-        print('Erreur: ${resp.statusCode} - ${resp.body}'); // Provide more context
+        print(
+            'Erreur lors de la récupération de l\'ID de l\'utilisateur: ${resp.body}');
+        return null;
       }
     } catch (e) {
-      print('Erreur: $e');
+      print('Erreur lors de la récupération de l\'ID de l\'utilisateur: $e');
+      return null;
     }
-  } else {
-    print('Token non trouvé localement');
   }
-}
 
+  Future<void> addToCart(String userId, String productId, int quantite) async {
+    String? token = await getTokenFromSharedPreferences();
+    if (token != null) {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      try {
+        final url = Uri.parse(
+          "http://192.168.1.17:3003/user/add-to-cart/$userId/$productId",
+        );
+        final resp = await http.put(
+          url,
+          headers: headers,
+          body: jsonEncode({
+            "quantite": quantite
+          }), // Empty body since you're sending quantite as a query parameter
+        );
+        if (resp.statusCode == 200) {
+          print('Produit ajouté au panier avec succès');
+        } else {
+          print(
+              'Erreur: ${resp.statusCode} - ${resp.body}'); // Provide more context
+        }
+      } catch (e) {
+        print('Erreur: $e');
+      }
+    } else {
+      print('Token non trouvé localement');
+    }
+  }
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF006583),
       appBar: PreferredSize(
@@ -178,7 +175,7 @@ class _ProductPageState extends State<ProductPage> {
         child: ClipRRect(
           child: AppBar(
             backgroundColor: Color(0xFF006583),
-            automaticallyImplyLeading: false, 
+            automaticallyImplyLeading: false,
             title: Container(
               child: Transform.translate(
                 offset: Offset(-60.0, 0.0),
@@ -189,8 +186,8 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
             iconTheme: IconThemeData(
-              size: 52, 
-              color: Colors.white, 
+              size: 52,
+              color: Colors.white,
             ),
           ),
         ),
@@ -369,7 +366,6 @@ class _ProductPageState extends State<ProductPage> {
                               color: Color(0xFFF6D776),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                           
                           ),
                         ),
                       ),
@@ -522,7 +518,6 @@ class _ProductPageState extends State<ProductPage> {
                     children: [
                       Transform.translate(
                         offset: Offset(33, 18),
-                      
                       ),
                       SizedBox(height: 50),
                       InkWell(
@@ -532,8 +527,7 @@ class _ProductPageState extends State<ProductPage> {
                             MaterialPageRoute(
                                 builder: (context) => PanierPage(
                                       id: widget.id,
-
-                                      quantite:number,
+                                      quantite: number,
                                     )),
                           );
                         },
@@ -564,21 +558,21 @@ class _ProductPageState extends State<ProductPage> {
                                 if (token != null) {
                                   String? userId =
                                       await getUserIdFromToken(token);
-                                      
+
                                   if (userId != null) {
                                     print("user wsell : $userId");
                                     // Ici, vous pouvez remplacer "productId" par l'ID réel du produit que vous souhaitez ajouter au panier
                                     String productId = widget.id;
                                     print("product wsel : $productId");
-                                    await addToCart(userId, productId,number);
+                                    await addToCart(userId, productId, number);
                                     Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PanierPage(
-                                            id: widget.id,
-                                            quantite : number,
-                                          )),
-                                );
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PanierPage(
+                                                id: widget.id,
+                                                quantite: number,
+                                              )),
+                                    );
                                   } else {
                                     print(
                                         'Impossible de récupérer l\'ID de l\'utilisateur');
@@ -586,9 +580,9 @@ class _ProductPageState extends State<ProductPage> {
                                 } else {
                                   print('Token non trouvé localement');
                                 }
-                                
                               },
-                              child: Text('Ajouter au panier',
+                              child: Text(
+                                'Ajouter au panier',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -601,11 +595,9 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                     ],
                   ),
-                
-                 
-                 
+
                   SizedBox(height: 35),
-                 
+
                   SizedBox(height: 36.0),
                   Padding(
                     padding: EdgeInsets.all(1.0),
@@ -617,71 +609,74 @@ class _ProductPageState extends State<ProductPage> {
         ),
       ),
       bottomNavigationBar: Container(
-  decoration: BoxDecoration(
-    color: Color(0xFFEFEFEF),
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(55.0),
-    ),
-  ),
-  child: BottomNavigationBar(
-    currentIndex: 4,
-    items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.search),
-        label: 'recherche',
+        decoration: BoxDecoration(
+          color: Color(0xFFEFEFEF),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(55.0),
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: 4,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'recherche',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.card_giftcard),
+              label: 'panier',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
+              label: 'favoris',
+            ),
+          ],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Color(0xFF006583),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RecherchePage()),
+                );
+                break;
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PanierPage(
+                            id: '',
+                            quantite: 0,
+                          )),
+                );
+                break;
+              case 2:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
+                break;
+              case 3:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+                break;
+            }
+          },
+        ),
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.card_giftcard),
-        label: 'panier',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'home',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person), 
-        label: 'profile',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.account_circle), 
-        label: 'favoris',
-      ),
-    ],
-    selectedItemColor: Colors.black,
-    unselectedItemColor: Color(0xFF006583),
-    showSelectedLabels: true,
-    showUnselectedLabels: true,
-    onTap: (index) {
-      switch (index) {
-        case 0:
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RecherchePage()),
-          );
-          break;
-        case 1:
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PanierPage(id: '',quantite: 0,)),
-          );
-          break;
-        case 2:
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Home()),
-          );
-          break;
-        case 3:
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfilePage()),
-          );
-          break;
-      }
-    },
-  ),
-),
-
       endDrawer: NavBar(),
     );
   }

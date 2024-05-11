@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -17,7 +15,7 @@ class LangagePage extends StatefulWidget {
 }
 
 class _LangagePageState extends State<LangagePage> {
-  String _selectedLanguage = 'Français'; 
+  String _selectedLanguage = 'Français';
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +63,8 @@ class _LangagePageState extends State<LangagePage> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                  decoration: TextDecoration.underline, // Ajout de la décoration soulignée
+                  decoration: TextDecoration
+                      .underline, // Ajout de la décoration soulignée
                 ),
               ),
               SizedBox(height: 5),
@@ -78,7 +77,8 @@ class _LangagePageState extends State<LangagePage> {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                  decoration: TextDecoration.underline, // Ajout de la décoration soulignée
+                  decoration: TextDecoration
+                      .underline, // Ajout de la décoration soulignée
                 ),
               ),
               SizedBox(height: 10),
@@ -116,7 +116,7 @@ class _LangagePageState extends State<LangagePage> {
                 color: Colors.black, // Couleur du texte
               ),
             ),
-            Spacer(), 
+            Spacer(),
             if (_selectedLanguage == language) Icon(Icons.check),
           ],
         ),

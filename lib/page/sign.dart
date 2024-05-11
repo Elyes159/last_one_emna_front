@@ -30,7 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     };
     try {
       final resp = await http.post(
-        Uri.parse("http://192.168.1.15:3003/user/register"),
+        Uri.parse("http://192.168.1.17:3003/user/register"),
         headers: headers,
         body: jsonEncode({
           "firstname": _firstNameController.text,
@@ -88,163 +88,161 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ],
                 ),
-               SizedBox(height: 20.0),
-Row(
-  children: [
-    Expanded(
-      child: SizedBox(
-        width: (screenWidth - 50) / 2,
-        child: _buildTextField(
-          'Prénom*',
-          Icons.person,
-          _firstNameController,
-          isPassword: false,
-        ),
-      ),
-    ),
-    SizedBox(width: 10.0),
-    Expanded(
-      child: SizedBox(
-        width: (screenWidth - 50) / 2,
-        child: _buildTextField(
-          'Nom*',
-          Icons.person,
-          _lastNameController,
-          isPassword: false,
-        ),
-      ),
-    ),
-  ],
-),
-SizedBox(height: 10.0),
-SizedBox(
-  width: screenWidth - 40.0,
-  child: _buildTextField(
-    'Adresse e-mail*',
-    Icons.email,
-    _emailController,
-    isPassword: false,
-  ),
-),
-SizedBox(height: 10.0),
-SizedBox(
-  width: screenWidth - 40.0,
-  child: _buildTextField(
-    'Mot de passe*',
-    Icons.lock,
-    _passwordController,
-    isPassword: true,
-  ),
-),
-SizedBox(height: 10.0),
-SizedBox(
-  width: screenWidth - 40.0,
-  child: _buildTextField(
-    'Confirmation du mot de passe*',
-    Icons.lock,
-    _confirmPasswordController,
-    isPassword: true,
-  ),
-),
-SizedBox(height: 10.0),
-SizedBox(
-  width: screenWidth - 40.0,
-  child: _buildTextField(
-    'Numéro téléphone*',
-    Icons.phone,
-    _numerotelephoneController,
-    isPassword: false,
-  ),
-),
-SizedBox(height: 10.0),
-SizedBox(
-  width: screenWidth - 40.0,
-  child: _buildTextField(
-    'Adresse*',
-    Icons.location_on,
-    _addressController,
-    isPassword: false,
-  ),
-),
-SizedBox(height: 10.0),
-Row(
-  children: [
-    Expanded(
-      child: SizedBox(
-        width: (screenWidth - 50) / 2,
-        child: _buildTextField(
-          'Ville*',
-          Icons.villa_rounded,
-          _cityController,
-          isPassword: false,
-        ),
-      ),
-    ),
-    SizedBox(width: 10.0),
-    Expanded(
-      child: SizedBox(
-        width: (screenWidth - 50) / 2,
-        child: _buildTextField(
-          'Code postal*',
-          Icons.folder_zip,
-          _zipController,
-          isPassword: false,
-        ),
-      ),
-    ),
-  ],
-),
-SizedBox(height: 10.0),
-Row(
-  children: [
-    Checkbox(
-      value: _isChecked,
-      onChanged: (value) {
-        setState(() {
-          _isChecked = value!;
-        });
-      },
-    ),
-    Flexible(
-      child: Text.rich(
-        TextSpan(
-          style: TextStyle(fontSize: 12.0, color: Colors.black),
-          children: [
-            TextSpan(
-              text: 'J\'accepte les ',
-            ),
-            TextSpan(
-              text: 'politiques de confidentialité',
-              style: TextStyle(
-                fontSize: 12.0,
-                color: const Color(0xFF006583),
-              ),
-            ),
-            TextSpan(
-              text: ' et les ',
-            ),
-            TextSpan(
-              text: 'conditions d\'utilisation',
-              style: TextStyle(
-                fontSize: 12.0,
-                color: const Color(0xFF006583),
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ],
-),
-
+                SizedBox(height: 20.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        width: (screenWidth - 50) / 2,
+                        child: _buildTextField(
+                          'Prénom*',
+                          Icons.person,
+                          _firstNameController,
+                          isPassword: false,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10.0),
+                    Expanded(
+                      child: SizedBox(
+                        width: (screenWidth - 50) / 2,
+                        child: _buildTextField(
+                          'Nom*',
+                          Icons.person,
+                          _lastNameController,
+                          isPassword: false,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                SizedBox(
+                  width: screenWidth - 40.0,
+                  child: _buildTextField(
+                    'Adresse e-mail*',
+                    Icons.email,
+                    _emailController,
+                    isPassword: false,
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                SizedBox(
+                  width: screenWidth - 40.0,
+                  child: _buildTextField(
+                    'Mot de passe*',
+                    Icons.lock,
+                    _passwordController,
+                    isPassword: true,
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                SizedBox(
+                  width: screenWidth - 40.0,
+                  child: _buildTextField(
+                    'Confirmation du mot de passe*',
+                    Icons.lock,
+                    _confirmPasswordController,
+                    isPassword: true,
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                SizedBox(
+                  width: screenWidth - 40.0,
+                  child: _buildTextField(
+                    'Numéro téléphone*',
+                    Icons.phone,
+                    _numerotelephoneController,
+                    isPassword: false,
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                SizedBox(
+                  width: screenWidth - 40.0,
+                  child: _buildTextField(
+                    'Adresse*',
+                    Icons.location_on,
+                    _addressController,
+                    isPassword: false,
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        width: (screenWidth - 50) / 2,
+                        child: _buildTextField(
+                          'Ville*',
+                          Icons.villa_rounded,
+                          _cityController,
+                          isPassword: false,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10.0),
+                    Expanded(
+                      child: SizedBox(
+                        width: (screenWidth - 50) / 2,
+                        child: _buildTextField(
+                          'Code postal*',
+                          Icons.folder_zip,
+                          _zipController,
+                          isPassword: false,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10.0),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isChecked,
+                      onChanged: (value) {
+                        setState(() {
+                          _isChecked = value!;
+                        });
+                      },
+                    ),
+                    Flexible(
+                      child: Text.rich(
+                        TextSpan(
+                          style: TextStyle(fontSize: 12.0, color: Colors.black),
+                          children: [
+                            TextSpan(
+                              text: 'J\'accepte les ',
+                            ),
+                            TextSpan(
+                              text: 'politiques de confidentialité',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color(0xFF006583),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' et les ',
+                            ),
+                            TextSpan(
+                              text: 'conditions d\'utilisation',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color(0xFF006583),
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 10.0),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       senddatatoserver();
-                
                     },
                     child: Text(
                       'Continuer',

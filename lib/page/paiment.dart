@@ -7,124 +7,146 @@ import 'package:flutter/material.dart' as Material;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled2/page/home.dart';
-import 'package:untitled2/page/page/suivrecommande.dart';
 import 'package:untitled2/page/panier.dart';
 import 'package:untitled2/page/parametre.dart';
 import 'package:untitled2/page/recheche.dart';
-import 'package:untitled2/page/sidebar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentPage extends StatefulWidget {
   final List<dynamic> cartProduct;
   final double prixtotal;
 
-  const PaymentPage({Material.Key? key, required this.cartProduct, required this.prixtotal}) : super(key: key);
+  const PaymentPage(
+      {Material.Key? key, required this.cartProduct, required this.prixtotal})
+      : super(key: key);
   @override
   _PaymentPageState createState() => _PaymentPageState();
 }
+
 Future<String?> getTokenFromSharedPreferences() async {
-    // Récupérer le token de l'utilisateur depuis les préférences partagées
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
-  }
+  // Récupérer le token de l'utilisateur depuis les préférences partagées
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token');
+}
 
-  Future<String?> getUserIdFromToken(String token) async {
-    // Construire les en-têtes de la requête HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
+Future<String?> getUserIdFromToken(String token) async {
+  // Construire les en-têtes de la requête HTTP
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
 
-    try {
-      // Effectuer une requête HTTP GET pour récupérer l'ID de l'utilisateur à partir du token
-      final resp = await http.get(
-        Uri.parse("http://192.168.1.15:3003/user/getuserbytoken/$token"),
-        headers: headers,
-      );
-      if ((resp.statusCode == 200) ||(resp.statusCode==201)) {
-        // Analyser la réponse JSON pour extraire l'ID de l'utilisateur
-        final userData = jsonDecode(resp.body);
-        final userId = userData['_id'] as String;
-        return userId;
-      } else {
-        print("hedha token : $token");
-        print(
-            'Erreur lors de la récupération de l\'ID de l\'utilisateur: ${resp.body}');
-        return null;
-      }
-    } catch (e) {
-      print('Erreur lors de la récupération de l\'ID de l\'utilisateur: $e');
+  try {
+    // Effectuer une requête HTTP GET pour récupérer l'ID de l'utilisateur à partir du token
+    final resp = await http.get(
+      Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
+      headers: headers,
+    );
+    if ((resp.statusCode == 200) || (resp.statusCode == 201)) {
+      // Analyser la réponse JSON pour extraire l'ID de l'utilisateur
+      final userData = jsonDecode(resp.body);
+      final userId = userData['_id'] as String;
+      return userId;
+    } else {
+      print("hedha token : $token");
+      print(
+          'Erreur lors de la récupération de l\'ID de l\'utilisateur: ${resp.body}');
       return null;
     }
+  } catch (e) {
+    print('Erreur lors de la récupération de l\'ID de l\'utilisateur: $e');
+    return null;
   }
+}
+
 Future<void> clearCart(String userId) async {
-  final url = Uri.parse('https://192.168.1.15:3003/clear-cart/$userId');
+  final url = Uri.parse('http://192.168.1.17:3003/user/clear-cart/$userId');
 
   try {
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       print('Cart cleared successfully');
     } else {
-      print('Failed to clear cart: ${response.reasonPhrase}');
+      print('Failed to clear cart: ${response.body}');
     }
   } catch (error) {
     print('Error clearing cart: $error');
   }
 }
 
-
-Future<void> passerCommande(BuildContext context ,String id,String etat,String paiment,String Reference,String quantite) async {
-  try {
-    // Récupérer le token de l'utilisateur depuis les préférences partagées
-    String? token = await getTokenFromSharedPreferences();
-    if (token != null) {
-      // Construire l'URL de l'API pour créer une commande
-      String apiUrl = "http://192.168.1.15:3003/commande/createCommande";
-
-      Map<String, dynamic> commandeData = {
-        "idproduct":id ,
-        "Etat" : etat,
-        "quantité" : quantite,
-        "paiment" :paiment,
-        "Référence": Reference,
-
-      };
-
-      // Effectuer une requête HTTP POST pour créer la commande
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
-        body: jsonEncode(commandeData),
-      );
-      
-      if (response.statusCode == 200) {
-        print("La commande a été créée avec succès");
-        
-      Future<String?> userId = getUserIdFromToken(token);
-        
-        
-        // Mettre à jour l'état pour déclencher la réévaluation de l'interface utilisateur
-       
-        
-        // Naviguer vers la page des détails de la commande
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>  CommandePage(),
+void _showConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Material.AlertDialog(
+        title: Icon(Icons.shopping_cart, size: 70, color: Color(0xFF006583)),
+        content: Text(
+          "Votre commande a été effectuée avec succès. \nVos articles seront bientôt expédiés.",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        actions: <Widget>[
+          Material.TextButton(
+            child: Text("OK"),
+            onPressed: () {
+              Navigator.push(
+                context,
+                Material.MaterialPageRoute(builder: (context) => Home()),
+              );
+            },
           ),
-        );
-      } else {
-        print("Erreur lors de la création de la commande : ${response.statusCode}");
-        // Gérer l'erreur en conséquence
-      }
+        ],
+      );
+    },
+  );
+}
+
+Future<void> createCommande(String userId, List<dynamic> cartProduct,
+    double prixtotal, String methodeDePaiement) async {
+  // Les données que vous souhaitez envoyer
+  Map<String, dynamic> data = {
+    'iduser': userId,
+    'produits': cartProduct.map((product) {
+      return {
+        'idproduct': product['productDetails']['_id'],
+        'quantité': product['quantity']
+      };
+    }).toList(),
+    'total': prixtotal,
+    'Paiement': methodeDePaiement,
+    'Etat': "en cours"
+  };
+
+  // Convertir les données en JSON
+  String jsonData = jsonEncode(data);
+
+  // URL de votre API
+  String url = 'http://192.168.1.17:3003/commande/createCommande';
+
+  try {
+    // Effectuer la requête POST
+    var response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonData,
+    );
+
+    // Vérifier le code de statut de la réponse
+    if (response.statusCode == 200) {
+      print('Commande passée avec succès !');
+      // Effacer le panier une fois la commande passée
+      await clearCart(userId);
+      // Afficher la boîte de dialogue de confirmation
+    } else {
+      print('Erreur lors de la commande : ${response.body}');
     }
-  } catch (e) {
-    print("Erreur lors de la création de la commande : $e");
+  } catch (error) {
+    print('Erreur : $error');
   }
 }
 
 class _PaymentPageState extends State<PaymentPage> {
   String _selectedPaymentMethod = 'Espèces';
-
 
   @override
   Widget build(BuildContext context) {
@@ -186,12 +208,27 @@ class _PaymentPageState extends State<PaymentPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Material.TextButton(
-                        onPressed: () {
-                          if( _selectedPaymentMethod == "En ligne"){
+                        onPressed: () async {
+                          print(widget.cartProduct);
+                          if (_selectedPaymentMethod == "En ligne") {
                             _launchURL();
-                          }
-                          else {
-                          _showConfirmationDialog();
+
+                            final String? token =
+                                await getTokenFromSharedPreferences();
+                            final String? userId =
+                                await getUserIdFromToken(token!);
+                            createCommande(userId!, widget.cartProduct,
+                                widget.prixtotal, _selectedPaymentMethod);
+                            clearCart(userId);
+                          } else {
+                            final String? token =
+                                await getTokenFromSharedPreferences();
+                            final String? userId =
+                                await getUserIdFromToken(token!);
+                            createCommande(userId!, widget.cartProduct,
+                                widget.prixtotal, _selectedPaymentMethod);
+                            clearCart(userId);
+                            _showConfirmationDialog(context);
                           }
                         },
                         child: Text(
@@ -199,10 +236,14 @@ class _PaymentPageState extends State<PaymentPage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         style: Material.ButtonStyle(
-                          backgroundColor: Material.MaterialStateProperty.all<Color>(Color(0xFF006583)),
-                          padding: Material.MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              EdgeInsets.symmetric(horizontal: 160, vertical: 10)),
-                          shape: Material.MaterialStateProperty.all<RoundedRectangleBorder>(
+                          backgroundColor:
+                              Material.MaterialStateProperty.all<Color>(
+                                  Color(0xFF006583)),
+                          padding: Material.MaterialStateProperty
+                              .all<EdgeInsetsGeometry>(EdgeInsets.symmetric(
+                                  horizontal: 160, vertical: 10)),
+                          shape: Material.MaterialStateProperty.all<
+                              RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
@@ -258,13 +299,18 @@ class _PaymentPageState extends State<PaymentPage> {
               case 0:
                 Navigator.push(
                   context,
-                  Material.MaterialPageRoute(builder: (context) => RecherchePage()),
+                  Material.MaterialPageRoute(
+                      builder: (context) => RecherchePage()),
                 );
                 break;
               case 1:
                 Navigator.push(
                   context,
-                  Material.MaterialPageRoute(builder: (context) => PanierPage(id: '',quantite: 0,)),
+                  Material.MaterialPageRoute(
+                      builder: (context) => PanierPage(
+                            id: '',
+                            quantite: 0,
+                          )),
                 );
                 break;
               case 2:
@@ -276,14 +322,14 @@ class _PaymentPageState extends State<PaymentPage> {
               case 3:
                 Navigator.push(
                   context,
-                  Material.MaterialPageRoute(builder: (context) => ProfilePage()),
+                  Material.MaterialPageRoute(
+                      builder: (context) => ProfilePage()),
                 );
                 break;
             }
           },
         ),
       ),
-      
     );
   }
 
@@ -307,27 +353,30 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-Widget _buildProductList() {
-  return Material.Container(
-    height: 500,
-    child: ListView.builder(
-      itemCount: widget.cartProduct.length,
-      itemBuilder: (context, index) {
-        var product = widget.cartProduct[index];
-        return Column(
-          children: [
-            _buildImageItem(product["productDetails"]['Image'], product["productDetails"]['Référence'], product["productDetails"]['Nom'], product['quantity']),
-            SizedBox(height: 5),
-          ],
-        );
-      },
-    ),
-  );
-}
+  Widget _buildProductList() {
+    return Material.Container(
+      height: 500,
+      child: ListView.builder(
+        itemCount: widget.cartProduct.length,
+        itemBuilder: (context, index) {
+          var product = widget.cartProduct[index];
+          return Column(
+            children: [
+              _buildImageItem(
+                  product["productDetails"]['Image'],
+                  product["productDetails"]['Référence'],
+                  product["productDetails"]['Nom'],
+                  product['quantity']),
+              SizedBox(height: 5),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-
-
-  Widget _buildImageItem(String imagePath, String Reference ,String Nom,int quantity){
+  Widget _buildImageItem(
+      String imagePath, String Reference, String Nom, int quantity) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -355,32 +404,30 @@ Widget _buildProductList() {
                 child: Material.Column(
                   children: [
                     Text(
-                     Reference ,
+                      Reference,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                     Nom ,
+                      Nom,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                     Text(
-                     " $quantity ",
+                    Text(
+                      " $quantity ",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                   ],
                 ),
               ),
             ),
-            
           ],
         ),
         SizedBox(height: 8),
@@ -389,59 +436,61 @@ Widget _buildProductList() {
   }
 
   Widget _buildPriceDetails() {
-    String selectedPaymentMethod = 'Espèces';
-    String deliveryAddress = '';
-
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20), // Changement pour un contour de coin circulaire
+        borderRadius: BorderRadius.circular(
+            20), // Changement pour un contour de coin circulaire
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, // Alignement modifié
         children: [
           Text(
             'Méthode de paiement:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,color: Color(0xFF006583)),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF006583)),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Sélectionnez:'),
               SizedBox(width: 10),
-             Row(
-  children: [
-    Radio(
-      value: 'Espèces',
-      groupValue: _selectedPaymentMethod,
-      onChanged: (value) {
-        setState(() {
-          _selectedPaymentMethod = value as String; // Affecter la valeur sélectionnée à selectedPaymentMethod
-        });
-      },
-    ),
-    Text('Espèces'),
-  ],
-),
-SizedBox(width: 10),
-Row(
-  children: [
-    Radio(
-      value: 'En ligne',
-      groupValue: _selectedPaymentMethod,
-      onChanged: (value) {
-        setState(() {
-          _selectedPaymentMethod = value as String; // Affecter la valeur sélectionnée à selectedPaymentMethod
-        });
-      },
-    ),
-    Text('En ligne'),
-  ],
-),
-
+              Row(
+                children: [
+                  Radio(
+                    value: 'Espèces',
+                    groupValue: _selectedPaymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPaymentMethod = value
+                            as String; // Affecter la valeur sélectionnée à selectedPaymentMethod
+                      });
+                    },
+                  ),
+                  Text('Espèces'),
+                ],
+              ),
+              SizedBox(width: 10),
+              Row(
+                children: [
+                  Radio(
+                    value: 'En ligne',
+                    groupValue: _selectedPaymentMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPaymentMethod = value
+                            as String; // Affecter la valeur sélectionnée à selectedPaymentMethod
+                      });
+                    },
+                  ),
+                  Text('En ligne'),
+                ],
+              ),
             ],
           ),
           SizedBox(height: 10),
@@ -506,7 +555,7 @@ Row(
     );
   }
 
-  void _showConfirmationDialog() {
+  void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -532,13 +581,13 @@ Row(
     );
   }
 }
+
 void _launchURL() async {
-  var url = Uri.parse('https://test.clictopay.com/payment/merchants/CLICTOPAY/payment_fr.html');
+  var url = Uri.parse(
+      'https://test.clictopay.com/payment/merchants/CLICTOPAY/payment_fr.html');
   try {
     await launch(url.toString());
   } catch (e) {
     print('Error launching URL: $e');
   }
 }
-
-

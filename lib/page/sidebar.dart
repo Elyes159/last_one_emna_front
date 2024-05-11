@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled2/page/connecte.dart';
@@ -27,15 +29,46 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
+  Future<String?> getTokenFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  Map<String, dynamic> user = {};
+
+  Future<Map<String, dynamic>> getUserFromToken() async {
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+      final String? token = await getTokenFromSharedPreferences();
+      final resp = await http.get(
+        Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
+        headers: headers,
+      );
+      if (resp.statusCode == 200) {
+        // Analyser la réponse JSON pour extraire les données de l'utilisateur
+        final userData = jsonDecode(resp.body);
+        setState(() {
+          user = userData;
+        });
+
+        return userData;
+      } else {
+        print(
+            'Erreur lors de la récupération des données de l\'utilisateur: ${resp.statusCode}');
+        return {};
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des données de l\'utilisateur: $e');
+      return {};
+    }
+  }
+
   bool isCategoryExpanded = false;
   void removeTokenFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('token');
-  }
-
-  Future<String?> getTokenFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
   }
 
   Future<void> logoutFromServer(String token) async {
@@ -46,7 +79,7 @@ class _NavBarState extends State<NavBar> {
 
     try {
       final resp = await http.post(
-        Uri.parse("http://192.168.1.18:3003/user/logout"),
+        Uri.parse("http://192.168.1.17:3003/user/logout"),
         headers: headers,
       );
       if (resp.statusCode == 200) {
@@ -68,6 +101,12 @@ class _NavBarState extends State<NavBar> {
     } else {
       print('Token non trouvé localement');
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserFromToken();
   }
 
   @override
@@ -101,7 +140,7 @@ class _NavBarState extends State<NavBar> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'bouachiri emna',
+                              '${user['firstname']} ${user['lastname']} ',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -110,7 +149,7 @@ class _NavBarState extends State<NavBar> {
                             ),
                             SizedBox(height: 5),
                             Text(
-                              'bouachiriemna6@gmail.com',
+                              '${user['email']}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -140,8 +179,7 @@ class _NavBarState extends State<NavBar> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => 
-                  CommandePage()),
+                  MaterialPageRoute(builder: (context) => CommandePage()),
                 );
               },
             ),
@@ -215,15 +253,17 @@ class _NavBarState extends State<NavBar> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Notificationpage()), // Utilisation de NotificationScreen à la place de NotificationPage
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          Notificationpage()), // Utilisation de NotificationScreen à la place de NotificationPage
                 );
               },
             ),
             buildListTile(
               icon: Icons.exit_to_app,
               title: 'Déconnexion',
-             onTap: () async {
-                 performLogout();
+              onTap: () async {
+                performLogout();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SignInScreen()),

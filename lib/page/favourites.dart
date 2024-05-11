@@ -24,7 +24,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     if (token != null) {
       String? userId = await getUserIdFromToken(token);
       if (userId != null) {
-        String apiUrl = "http://192.168.1.15:3003/user/favorites/$userId";
+        String apiUrl = "http://192.168.1.17:3003/user/favorites/$userId";
         try {
           final response = await http.get(Uri.parse(apiUrl));
           if (response.statusCode == 200) {
@@ -62,8 +62,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   itemBuilder: (context, index) {
                     final product = favoriteProducts[index];
                     return ListTile(
-                      title: Text(product['name']),
-                      subtitle: Text(product['description']),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(product['Image']),
+                      ),
+                      title: Text(product['Nom']),
+                      subtitle: Text("${product['Product ID']}"),
                       // Ajoutez d'autres informations sur le produit selon votre modèle de données
                     );
                   },
@@ -84,7 +88,7 @@ Future<String?> getUserIdFromToken(String token) async {
 
   try {
     final resp = await http.get(
-      Uri.parse("http://192.168.1.15:3003/user/getuserbytoken/$token"),
+      Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
       headers: headers,
     );
     if (resp.statusCode == 200) {

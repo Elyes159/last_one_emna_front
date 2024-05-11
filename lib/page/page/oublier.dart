@@ -12,7 +12,7 @@ class ForgotPasswordPage extends StatelessWidget {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.19:3003/user/reset-password'),
+        Uri.parse('http://192.168.1.17:3003/user/reset-password'),
         headers: <String, String>{
           'Content-Type': 'application/json',
         },

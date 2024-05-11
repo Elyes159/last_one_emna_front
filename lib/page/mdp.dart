@@ -10,24 +10,25 @@ class MotDePassePage extends StatefulWidget {
   @override
   _MotDePassePageState createState() => _MotDePassePageState();
 }
- TextEditingController _oldPasswordController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
-  TextEditingController _confirmNewPassController = TextEditingController();
- Future<String?> getSharedPreferencesToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    return token;
-  }
- Future<String?> getIdUser() async {
+
+TextEditingController _oldPasswordController = TextEditingController();
+TextEditingController _newPasswordController = TextEditingController();
+TextEditingController _confirmNewPassController = TextEditingController();
+Future<String?> getSharedPreferencesToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  return token;
+}
+
+Future<String?> getIdUser() async {
   final token = await getSharedPreferencesToken();
   print("houni : $token");
   Map<String, String> headers = {
     'Content-Type': 'application/json',
-
   };
   try {
     final response = await http.get(
-      Uri.parse("http://192.168.1.18:3003/user/getuserbytoken/$token"),
+      Uri.parse("http://192.168.1.17:3003/user/getuserbytoken/$token"),
       headers: headers,
     );
     if (response.statusCode == 200) {
@@ -44,36 +45,36 @@ class MotDePassePage extends StatefulWidget {
     return null; // Retourner null ou une autre valeur en cas d'erreur
   }
 }
- void senddatatoserver() async {
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-    final userid=await getIdUser();
-    print("houni : $userid");
-    try {
-      final resp = await http.put(
-        Uri.parse("http://192.168.1.18:3003/user/updatePass/$userid"),
-        headers: headers,
-        body: jsonEncode({
 
-          "oldPassword": _oldPasswordController.text,
-          "newPassword": _newPasswordController.text,
-          "confirmNewPass": _confirmNewPassController.text,
-        }),
-      );
-      if (resp.statusCode == 200) {
-        print('donnee avec sucees');
-      } else {
-        print('erreur ${resp.body}');
-      }
-    } catch (e) {
-      print('erreur: $e');
+void senddatatoserver() async {
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+  final userid = await getIdUser();
+  print("houni : $userid");
+  try {
+    final resp = await http.put(
+      Uri.parse("http://192.168.1.17:3003/user/updatePass/$userid"),
+      headers: headers,
+      body: jsonEncode({
+        "oldPassword": _oldPasswordController.text,
+        "newPassword": _newPasswordController.text,
+        "confirmNewPass": _confirmNewPassController.text,
+      }),
+    );
+    if (resp.statusCode == 200) {
+      print('donnee avec sucees');
+    } else {
+      print('erreur ${resp.body}');
     }
+  } catch (e) {
+    print('erreur: $e');
   }
+}
+
 class _MotDePassePageState extends State<MotDePassePage> {
-  
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF006583),
       appBar: PreferredSize(
@@ -179,26 +180,22 @@ class _MotDePassePageState extends State<MotDePassePage> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                       senddatatoserver();
+                        senddatatoserver();
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => Home()),
+                          MaterialPageRoute(builder: (context) => Home()),
                         );
                       },
                       child: Container(
-                        width: 90, 
+                        width: 90,
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Text(
                           'Confirmer',
-                          style: TextStyle(
-                            fontSize: 18, 
-                            color: Colors.white
-                          ),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF006583), 
+                        backgroundColor: Color(0xFF006583),
                       ),
                     ),
                   ],
@@ -208,12 +205,17 @@ class _MotDePassePageState extends State<MotDePassePage> {
           ),
         ),
       ),
-      endDrawer: NavBar(), // Utiliser endDrawer pour afficher le drawer à droite
+      endDrawer:
+          NavBar(), // Utiliser endDrawer pour afficher le drawer à droite
     );
   }
 
   // Fonction pour construire un champ de formulaire avec un titre, du texte et une icône
-  Widget _buildFormFieldWithTitle({required String title, required String hintText, required IconData icon , required TextEditingController controller}) {
+  Widget _buildFormFieldWithTitle(
+      {required String title,
+      required String hintText,
+      required IconData icon,
+      required TextEditingController controller}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -232,7 +234,7 @@ class _MotDePassePageState extends State<MotDePassePage> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: TextFormField(
-            controller:controller ,
+            controller: controller,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 10,
@@ -248,4 +250,3 @@ class _MotDePassePageState extends State<MotDePassePage> {
     );
   }
 }
-
